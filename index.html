@@ -146,6 +146,20 @@ form input{flex:1 1 auto;min-width:0;background:var(--bg);border:1.5px solid var
 form button{flex:none;background:var(--brand);color:var(--brand-ink);border:0;border-radius:12px;padding:0 18px;font-weight:600;cursor:pointer;min-height:46px}
 .note{margin:0;font-size:12px;color:var(--muted)}
 @media (prefers-reduced-motion:no-preference){#thread{scroll-behavior:smooth}}
+
+#gate{position:fixed;inset:0;z-index:100;background:var(--bg);color:var(--fg);overflow-y:auto;-webkit-overflow-scrolling:touch;display:none}
+#gate.on{display:block}
+#gate .gin{padding-top:max(16px,env(safe-area-inset-top,0px));padding-bottom:max(24px,env(safe-area-inset-bottom,0px))}
+#gate .gmark{display:flex;align-items:center;gap:10px;margin:8px 0 12px}
+#gate .gmark .mark{flex:none}
+#gate .card{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--brand);border-radius:12px;padding:18px 16px;margin:12px 0}
+#gate h2{font-size:1.15rem;line-height:1.4;margin:0 0 12px;color:var(--brand)}
+#gate ol{margin:0;padding-left:1.4em}
+#gate li{margin:0 0 12px;line-height:1.65}
+#gate li:last-child{margin-bottom:0}
+#gate .gneed{font-size:.85rem;color:var(--muted);margin:14px 0 8px}
+#gate .gok{position:sticky;bottom:max(12px,env(safe-area-inset-bottom,0px));box-shadow:0 0 0 10px var(--bg);display:block;width:100%;min-height:52px;border:0;border-radius:10px;background:var(--brand);color:var(--brand-ink);font:inherit;font-weight:700;font-size:1.05rem;cursor:pointer}
+#gate .gok:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
 </style>
 
 <header class="band"><div class="wrap">
@@ -172,6 +186,12 @@ form button{flex:none;background:var(--brand);color:var(--brand-ink);border:0;bo
   <p class="note" id="note"></p>
 </div></div>
 
+<div id="gate" role="dialog" aria-modal="true" aria-labelledby="gt" tabindex="-1"><div class="wrap gin">
+  <div class="gmark"><div class="mark" lang="ja">千房</div><div id="glangs"></div></div>
+  <div class="card"><h2 id="gt"></h2><ol id="gl"></ol></div>
+  <p class="gneed" id="gneed"></p>
+  <button type="button" class="gok" id="gok"></button>
+</div></div>
 <script>
 (function(){
 'use strict';
@@ -649,6 +669,32 @@ $('langbtn').addEventListener('click',function(){
 $('store').addEventListener('change',function(){store=this.value;safeSet('chibo-allergy-store',store);});
 $('f').addEventListener('submit',function(e){e.preventDefault();var v=$('q').value;$('q').value='';answer(v);});
 
+
+var GATE={"ja": {"t": "【必ずお読みください】アレルギーのあるお客様へ", "a": "このガイドは参考情報です。ご注文の際は、必ずスタッフにアレルギーをお伝えください。", "b": "「含まない」と表示されても、調理器具・油・鉄板などを共有しているため、微量が混入する可能性があります。細心の注意を払いますが100％安全とは言い切れないことはご了承ください。", "c": "「含む可能性」「スタッフに確認」と表示されたメニューは、お召し上がりにならないでください。確認が取れるまでご注文をお控えください。", "d": "表示のないメニュー、季節・店舗限定・期間限定メニュー、トッピング、ソース、サービス品は、本ガイドに載っていない場合があります。", "ok": "承諾しました", "need": "承諾すると、ご利用いただけます。"}, "en": {"t": "[Please read] For guests with food allergies", "a": "This guide is for reference only. Always tell our staff about your allergy when you order.", "b": "Even if a dish shows “Not listed,” traces may be present because we share cooking equipment, oil and griddles. We take the utmost care, but we cannot guarantee that any dish is 100% safe. Thank you for your understanding.", "c": "Please do not eat dishes marked “May contain” or “Confirm with staff.” Please wait to order until staff have confirmed.", "d": "Dishes not shown, seasonal, store-limited and limited-time dishes, toppings, sauces and complimentary items may not be listed in this guide.", "ok": "I agree", "need": "You must agree to continue."}, "zhs": {"t": "【请务必阅读】致有食物过敏的顾客", "a": "本指南仅供参考。点餐时，请务必告知店员您的过敏情况。", "b": "即使显示为“未含有”，由于烹饪器具、油和铁板等为共用，仍可能混入微量成分。我们会格外小心，但无法保证100%安全，敬请谅解。", "c": "标示为“可能含有”或“请向店员确认”的菜品，请勿食用。在确认之前，请先不要点餐。", "d": "未显示的菜品、季节限定、门店限定、期间限定菜品，以及配料、酱汁和赠送品，可能未收录在本指南中。", "ok": "我同意", "need": "同意后方可继续使用。"}, "zht": {"t": "【請務必閱讀】致有食物過敏的顧客", "a": "本指南僅供參考。點餐時，請務必告知店員您的過敏情況。", "b": "即使顯示為「未含有」，由於烹調器具、油品與鐵板等為共用，仍可能混入微量成分。我們會格外小心，但無法保證100%安全，敬請見諒。", "c": "標示為「可能含有」或「請向店員確認」的菜色，請勿食用。在確認之前，請先不要點餐。", "d": "未顯示的菜色、季節限定、門市限定、期間限定菜色，以及配料、醬汁與贈品，可能未收錄於本指南。", "ok": "我同意", "need": "同意後方可繼續使用。"}, "ko": {"t": "[꼭 읽어 주세요] 알레르기가 있는 고객님께", "a": "이 가이드는 참고용입니다. 주문하실 때 반드시 직원에게 알레르기를 알려 주세요.", "b": "'미함유'로 표시되어도 조리 도구, 기름, 철판 등을 함께 사용하기 때문에 미량이 섞일 수 있습니다. 세심한 주의를 기울이고 있으나 100% 안전하다고 단언할 수는 없는 점 양해해 주시기 바랍니다.", "c": "'함유 가능성' 또는 '직원에게 확인'으로 표시된 메뉴는 드시지 마세요. 확인이 끝날 때까지 주문을 보류해 주세요.", "d": "표시되지 않은 메뉴, 계절·매장 한정·기간 한정 메뉴, 토핑, 소스, 서비스 제공 품목은 이 가이드에 없을 수 있습니다.", "ok": "동의합니다", "need": "동의하셔야 이용하실 수 있습니다."}, "fr": {"t": "[À lire impérativement] Aux clients souffrant d’allergies alimentaires", "a": "Ce guide est donné à titre indicatif. Signalez toujours votre allergie au personnel lors de votre commande.", "b": "Même si un plat est indiqué « Non listé », des traces peuvent être présentes, car les ustensiles, l’huile et les plaques de cuisson sont partagés. Nous y apportons le plus grand soin, mais nous ne pouvons garantir une sécurité à 100 %. Merci de votre compréhension.", "c": "Ne consommez pas les plats indiqués « Peut contenir » ou « À vérifier auprès du personnel ». Attendez la confirmation du personnel avant de commander.", "d": "Les plats non affichés, les plats de saison, propres à un restaurant ou à durée limitée, ainsi que les garnitures, sauces et articles offerts peuvent ne pas figurer dans ce guide.", "ok": "J’accepte", "need": "Vous devez accepter pour continuer."}, "de": {"t": "[Bitte unbedingt lesen] Für Gäste mit Nahrungsmittelallergien", "a": "Dieser Guide dient nur zur Orientierung. Bitte informieren Sie bei der Bestellung immer das Personal über Ihre Allergie.", "b": "Auch wenn ein Gericht als „Nicht aufgeführt“ angezeigt wird, können Spuren enthalten sein, da Kochgeräte, Öl und Grillplatten gemeinsam genutzt werden. Wir arbeiten äußerst sorgfältig, können aber keine 100-prozentige Sicherheit garantieren. Vielen Dank für Ihr Verständnis.", "c": "Bitte essen Sie keine Gerichte, die als „Kann enthalten“ oder „Beim Personal nachfragen“ gekennzeichnet sind. Bitte bestellen Sie erst, wenn das Personal es bestätigt hat.", "d": "Nicht angezeigte Gerichte, saisonale, restaurantspezifische und zeitlich begrenzte Gerichte sowie Toppings, Soßen und Gratisartikel sind in diesem Guide möglicherweise nicht enthalten.", "ok": "Ich stimme zu", "need": "Zum Fortfahren ist Ihre Zustimmung erforderlich."}, "it": {"t": "[Da leggere con attenzione] Per i clienti con allergie alimentari", "a": "Questa guida è solo indicativa. Al momento dell’ordine, segnala sempre la tua allergia al personale.", "b": "Anche se un piatto è indicato come «Non indicato», potrebbero essere presenti tracce, perché utensili, olio e piastre sono condivisi. Prestiamo la massima attenzione, ma non possiamo garantire una sicurezza al 100%. Grazie per la comprensione.", "c": "Non consumare i piatti indicati come «Può contenere» o «Chiedi al personale». Attendi la conferma del personale prima di ordinare.", "d": "I piatti non mostrati, quelli stagionali, esclusivi di un ristorante o a tempo limitato, e i condimenti, le salse e gli omaggi potrebbero non essere presenti in questa guida.", "ok": "Accetto", "need": "Devi accettare per continuare."}, "th": {"t": "【โปรดอ่าน】สำหรับลูกค้าที่แพ้อาหาร", "a": "คู่มือนี้ใช้เพื่อการอ้างอิงเท่านั้น เมื่อสั่งอาหาร โปรดแจ้งพนักงานเรื่องอาการแพ้ของท่านทุกครั้ง", "b": "แม้จะแสดงว่า “ไม่มีในรายการ” ก็อาจมีส่วนผสมปะปนเล็กน้อย เนื่องจากใช้อุปกรณ์ปรุงอาหาร น้ำมัน และเตาแผ่นเหล็กร่วมกัน เราใส่ใจอย่างสูงสุด แต่ไม่สามารถรับประกันความปลอดภัย 100% ได้ ขอความเข้าใจจากท่านด้วย", "c": "โปรดอย่ารับประทานเมนูที่แสดงว่า “อาจมี” หรือ “สอบถามพนักงาน” และโปรดรอสั่งจนกว่าพนักงานจะยืนยัน", "d": "เมนูที่ไม่แสดง เมนูตามฤดูกาล เมนูเฉพาะสาขา เมนูจำกัดเวลา รวมถึงท็อปปิ้ง ซอส และของแถม อาจไม่อยู่ในคู่มือนี้", "ok": "ฉันยอมรับ", "need": "ต้องยอมรับก่อนจึงจะใช้งานต่อได้"}, "vi": {"t": "[Vui lòng đọc] Dành cho quý khách bị dị ứng thực phẩm", "a": "Hướng dẫn này chỉ mang tính tham khảo. Khi gọi món, hãy luôn báo cho nhân viên về tình trạng dị ứng của quý khách.", "b": "Ngay cả khi món ăn hiển thị “Không ghi”, vẫn có thể lẫn một lượng nhỏ do dụng cụ nấu, dầu và bếp sắt được dùng chung. Chúng tôi luôn hết sức cẩn trọng nhưng không thể đảm bảo an toàn 100%. Mong quý khách thông cảm.", "c": "Vui lòng không dùng các món hiển thị “Có thể chứa” hoặc “Hỏi nhân viên”. Hãy chờ nhân viên xác nhận rồi mới gọi món.", "d": "Các món không hiển thị, món theo mùa, món riêng của từng cửa hàng, món có thời hạn, cũng như topping, nước sốt và món tặng kèm có thể không có trong hướng dẫn này.", "ok": "Tôi đồng ý", "need": "Bạn cần đồng ý để tiếp tục."}, "my": {"t": "【ကျေးဇူးပြု၍ ဖတ်ပါ】အစားအစာ ဓာတ်မတည့်သော ဧည့်သည်များအတွက်", "a": "ဤလမ်းညွှန်သည် ကိုးကားရန်သာ ဖြစ်ပါသည်။ မှာယူသည့်အခါ သင့်ဓာတ်မတည့်မှုကို ဝန်ထမ်းအား အမြဲပြောပြပါ။", "b": "“မပါ” ဟု ပြထားသော်လည်း ချက်ပြုတ်ကိရိယာ၊ ဆီနှင့် သံပြားတို့ကို ဝေမျှသုံးစွဲသဖြင့် အနည်းငယ် ရောနှောနိုင်ပါသည်။ ကျွန်ုပ်တို့ အထူးဂရုစိုက်ပါသော်လည်း ၁၀၀% ဘေးကင်းသည်ဟု အာမမခံနိုင်ပါ။ နားလည်ပေးပါရန် မေတ္တာရပ်ခံပါသည်။", "c": "“ပါဝင်နိုင်” သို့မဟုတ် “ဝန်ထမ်းကို မေးပါ” ဟု ပြထားသော မီနူးများကို မစားပါနှင့်။ ဝန်ထမ်းက အတည်ပြုပြီးမှ မှာယူပါ။", "d": "မပြထားသော မီနူးများ၊ ရာသီအလိုက်၊ ဆိုင်ခွဲအလိုက်၊ ကာလအကန့်အသတ်ဖြင့် မီနူးများ၊ ထိပ်ဖု (topping)၊ ဆော့စ်နှင့် ဝန်ဆောင်မှုအနေဖြင့် ပေးသော ပစ္စည်းများသည် ဤလမ်းညွှန်တွင် မပါဝင်နိုင်ပါ။", "ok": "သဘောတူပါသည်", "need": "ဆက်လက်အသုံးပြုရန် သဘောတူရန် လိုအပ်ပါသည်။"}};
+var GAPP=['band','storebar','selbar','thread'];
+function gateEls(){var a=[];['.band','.storebar','.selbar','#thread','.composer'].forEach(function(q){var e=document.querySelector(q);if(e)a.push(e);});return a;}
+function renderGate(){
+  var g=GATE[lang]||GATE.en,L=LANGS.filter(function(x){return x.c===lang;})[0];
+  var box=$('gate');box.setAttribute('lang',L.h);
+  $('gt').textContent=g.t;
+  $('gl').innerHTML=['a','b','c','d'].map(function(k){return '<li>'+esc(g[k])+'</li>';}).join('');
+  $('gneed').textContent=g.need;$('gok').textContent=g.ok;
+  var h='<div class="chips" role="group" aria-label="Language">'+LANGS.map(function(l){
+    return '<button type="button" class="chip'+(l.c===lang?' on':'')+'" data-l="'+l.c+'" lang="'+l.h+'" aria-pressed="'+(l.c===lang)+'">'+esc(l.n)+'</button>';}).join('')+'</div>';
+  $('glangs').innerHTML=h;
+  $('glangs').querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){setLang(b.getAttribute('data-l'),true);renderGate();});});
+}
+function openGate(){
+  gateEls().forEach(function(e){e.setAttribute('inert','');e.setAttribute('aria-hidden','true');});
+  renderGate();$('gate').classList.add('on');$('gate').scrollTop=0;
+  try{$('gate').focus({preventScroll:true});}catch(e){}
+}
+function closeGate(){
+  gateEls().forEach(function(e){e.removeAttribute('inert');e.removeAttribute('aria-hidden');});
+  $('gate').classList.remove('on');thread.scrollTop=0;
+}
+$('gok').addEventListener('click',closeGate);
+
 (function init(){
   var saved=safeGet('chibo-allergy-lang');
   lang=LANGS.some(function(l){return l.c===saved;})?saved:detectLang();
@@ -660,7 +706,7 @@ $('f').addEventListener('submit',function(e){e.preventDefault();var v=$('q').val
     if(Array.isArray(js))sel=js.filter(function(n,i){return typeof n==='number'&&n>=0&&n<28&&n%1===0&&js.indexOf(n)===i;}).sort(function(x,y){return x-y;});
   }catch(e){sel=[];}
   $('seledit').addEventListener('click',function(){openPicker(true);});
-  applyUI();greet();
+  applyUI();greet();openGate();
 })();
 })();
 </script>
