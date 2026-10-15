@@ -105,6 +105,23 @@ details.combos summary{cursor:pointer;font-weight:600;font-size:13.5px;min-heigh
 .foot{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);margin-top:12px;padding-top:10px}
 .more{align-self:flex-start;margin-top:10px}
 
+/* Selected allergens bar, result tabs, per-dish verdict */
+.selbar{background:var(--surface);border-bottom:1px solid var(--line);flex:none}
+.selbar .wrap{display:flex;align-items:center;gap:10px;padding-block:8px}
+.sellbl{font-size:12.5px;color:var(--muted);font-weight:600;flex:none}
+#selchips{flex:1 1 auto;min-width:0;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:thin}
+#selchips .al{white-space:nowrap;flex:none}
+#seledit{flex:none;min-height:34px;padding:5px 12px;font-size:13px}
+.tabs{display:flex;gap:6px;margin:10px 0 6px;flex-wrap:wrap}
+.tab{flex:1 1 auto;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer;min-height:42px;font-weight:600;font-size:14px}
+.tab[aria-selected="true"]{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.cnt{display:inline-block;min-width:1.6em;text-align:center;font-variant-numeric:tabular-nums}
+.hit{margin:0;padding:8px 12px;border-radius:8px;font-weight:600;font-size:14px}
+.hit-has{background:var(--has-bg);color:var(--has-fg)}
+.hit-may{border:1.5px dashed var(--fg)}
+.hit-free{background:var(--good-bg);color:var(--good)}
+.sub{margin:0 0 4px}
+
 /* Allergen picker */
 .pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px;margin:10px 0}
 .pick button{display:flex;flex-direction:column;align-items:flex-start;gap:0;text-align:left;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer;min-width:0;min-height:48px;overflow-wrap:anywhere}
@@ -139,6 +156,11 @@ form button{flex:none;background:var(--brand);color:var(--brand-ink);border:0;bo
 <div class="storebar"><div class="wrap">
   <label for="store" id="storelbl"></label>
   <select id="store"></select>
+</div></div>
+<div class="selbar"><div class="wrap">
+  <span class="sellbl" id="sellbl"></span>
+  <ul class="als" id="selchips"></ul>
+  <button type="button" class="chip" id="seledit"></button>
 </div></div>
 <main id="thread" aria-live="polite" aria-label="Chat"><div class="wrap" id="msgs"></div></main>
 <div class="composer"><div class="wrap">
@@ -175,6 +197,22 @@ vi:{title:"Hướng dẫn chất gây dị ứng",sub:"Tra cứu dị ứng theo
 my:{title:"ဓာတ်မတည့်မှု လမ်းညွှန်",sub:"မီနူးအလိုက် ဓာတ်မတည့်စေသော ပစ္စည်း ရှာရန်",greet:"မင်္ဂလာပါ။ မီနူးအမည် ရိုက်ထည့်ပါ။ ပါဝင်နေသော ဓာတ်မတည့်စေနိုင်သည့် ပစ္စည်းများကို ပြပေးပါမည်။ ရှောင်ရမည့် ပစ္စည်းအလိုက်လည်း ရှာနိုင်ပါသည်။",ph:"မီနူးအမည် (ဥပမာ pork okonomiyaki)",send:"ပို့ရန်",rev:"ကျွန်ုပ်မှာ … မတည့်ပါ",revHead:"ရှောင်ရမည့် ပစ္စည်းများကို ရွေးပါ။",revGo:"မီနူးများ ပြရန်",revNone:"အနည်းဆုံး တစ်ခု ရွေးပါ။",contains:"ပါဝင်သည်",may:"ပါဝင်နိုင်သည် (ရောနှောမှု)",none:"စာရင်းပါ ၂၈ မျိုးတွင် မှတ်ပုံတင်ထားခြင်း မရှိပါ။ ဝန်ထမ်းထံ အတည်ပြုပါ။",inc:"ပါဝင်သည့် အစိတ်အပိုင်း",combos:"ရွေးချယ်နိုင်သော ပေါင်းစပ်မှုများ ကြည့်ရန်",union:"ပေါင်းစပ်မှုအားလုံးရှိ ပစ္စည်းများကို ပြထားသည်။",notFound:"ဤမီနူးကို မတွေ့ပါ။ အခြားစာလုံးပေါင်းဖြင့် ကြိုးစားပါ သို့မဟုတ် ဝန်ထမ်းကို မေးပါ။ ဤစာရင်းတွင် မပါခြင်းသည် ဓာတ်မတည့်စေသည့် ပစ္စည်း မပါဟု မဆိုလိုပါ။",dym:"ဤအမည်ကို ဆိုလိုပါသလား -",storeLbl:"သင့်ဆိုင်ခွဲ",storeAll:"ဆိုင်ခွဲအားလုံး",more:"ပိုကြည့်ရန်",note:"ဤလမ်းညွှန်သည် ရည်ညွှန်းရန်သာ ဖြစ်သည်။ သင့်ဓာတ်မတည့်မှုကို ဝန်ထမ်းအား အမြဲပြောပါ။",foot:"မီးဖိုချောင်တွင် ရောနှောမှု ဖြစ်နိုင်သည်။ ပြင်းထန်ပါက မှာယူမီ ဝန်ထမ်းအား ပြောပါ။",freeHead:"သင်မတည့်သော ပစ္စည်း မပါသည့် မီနူးများ",freeNote:"အချက်အလက် မှတ်ပုံတင်မထားသော မီနူးများနှင့် ပါဝင်နိုင်သော မီနူးများကို မပြထားပါ။ ဝန်ထမ်းထံ အတည်ပြုပါ။",freeEmpty:"ကိုက်ညီသော မီနူး မတွေ့ပါ။ ဝန်ထမ်းကို မေးပါ။",tryLbl:"စမ်းကြည့်ရန် -",langBtn:"ဘာသာစကား",pickLang:"ဘာသာစကား ရွေးပါ",allStoresTag:"ဆိုင်ခွဲအားလုံး"},
 ja:{title:"アレルギー情報ガイド",sub:"メニュー別アレルギー検索",greet:"こんにちは。メニュー名を入力すると、含まれるアレルゲンをお知らせします。避けたいアレルゲンからメニューを探すこともできます。",ph:"メニュー名（例：豚玉）",send:"送信",rev:"避けたいアレルゲンから探す",revHead:"避けたいアレルゲンを選んでください。",revGo:"メニューを表示",revNone:"アレルゲンを1つ以上選んでください。",contains:"含む",may:"含む可能性あり（コンタミネーション）",none:"28品目の登録はありません。スタッフにご確認ください。",inc:"構成",combos:"組み合わせごとに見る",union:"すべての組み合わせに含まれるアレルゲンを表示しています。",notFound:"メニューが見つかりませんでした。別の表記でお試しいただくか、スタッフにお尋ねください。このリストにないメニューがアレルゲンを含まないという意味ではありません。",dym:"もしかして：",storeLbl:"ご利用の店舗",storeAll:"すべての店舗",more:"もっと見る",note:"本ガイドは参考情報です。アレルギーのある方は、必ずスタッフにお伝えください。",foot:"厨房内でコンタミネーションが起こる可能性があります。重度のアレルギーの方はご注文前にスタッフにお伝えください。",freeHead:"選択したアレルゲンが登録されていないメニュー",freeNote:"登録情報のないメニューと、該当アレルゲンを含む可能性のあるメニューは表示していません。スタッフにご確認ください。",freeEmpty:"該当するメニューがありません。スタッフにお尋ねください。",tryLbl:"例：",langBtn:"言語",pickLang:"言語を選んでください",allStoresTag:"すべての店舗"}
 };
+
+
+var UI2={
+en:{selHead:"Select the foods you are allergic to (you can choose several).",myAl:"My allergens",edit:"Edit",clear:"Clear",noneSel:"None selected",tabFree:"Not listed",tabMay:"May contain",tabHas:"Contains",listHead:"Dishes for your allergens",lhFree:"These dishes do not list any of your allergens.",lhMay:"These dishes may contain your allergens through cross-contact.",lhHas:"These dishes contain at least one of your allergens.",noData:"{n} dishes have no allergen data and are not shown. Please ask our staff.",cardHas:"Contains your allergen:",cardMay:"May contain your allergen:",cardFree:"None of your selected allergens are listed"},
+zhs:{selHead:"请选择您过敏的食材（可多选）。",myAl:"我的过敏原",edit:"修改",clear:"清除",noneSel:"未选择",tabFree:"未含有",tabMay:"可能含有",tabHas:"含有",listHead:"按您的过敏原筛选的菜品",lhFree:"这些菜品未登记含有您的任何过敏原。",lhMay:"这些菜品可能因交叉接触而含有您的过敏原。",lhHas:"这些菜品至少含有您的一种过敏原。",noData:"有{n}道菜品没有过敏原数据，未在此显示。请询问店员。",cardHas:"含有您的过敏原：",cardMay:"可能含有您的过敏原：",cardFree:"未登记含有您所选的任何过敏原"},
+zht:{selHead:"請選擇您過敏的食材（可複選）。",myAl:"我的過敏原",edit:"修改",clear:"清除",noneSel:"未選擇",tabFree:"未含有",tabMay:"可能含有",tabHas:"含有",listHead:"依您的過敏原篩選的菜色",lhFree:"這些菜色未登記含有您的任何過敏原。",lhMay:"這些菜色可能因交叉接觸而含有您的過敏原。",lhHas:"這些菜色至少含有您的一種過敏原。",noData:"有{n}道菜色沒有過敏原資料，未在此顯示。請詢問店員。",cardHas:"含有您的過敏原：",cardMay:"可能含有您的過敏原：",cardFree:"未登記含有您所選的任何過敏原"},
+ko:{selHead:"알레르기가 있는 식품을 선택해 주세요 (여러 개 선택 가능).",myAl:"내 알레르기",edit:"수정",clear:"초기화",noneSel:"선택 없음",tabFree:"미함유",tabMay:"함유 가능성",tabHas:"함유",listHead:"선택한 알레르기 기준 메뉴",lhFree:"선택한 알레르기 식품이 등록되지 않은 메뉴입니다.",lhMay:"교차 접촉으로 선택한 식품이 들어갈 가능성이 있는 메뉴입니다.",lhHas:"선택한 식품을 하나 이상 함유한 메뉴입니다.",noData:"알레르기 정보가 없는 메뉴 {n}개는 표시되지 않습니다. 직원에게 문의해 주세요.",cardHas:"내 알레르기 식품 함유:",cardMay:"내 알레르기 식품 함유 가능성:",cardFree:"선택한 알레르기 식품이 등록되어 있지 않습니다"},
+fr:{selHead:"Sélectionnez d'abord les aliments auxquels vous êtes allergique (plusieurs choix possibles).",myAl:"Mes allergènes",edit:"Modifier",clear:"Effacer",noneSel:"Aucun choix",tabFree:"Non listé",tabMay:"Peut contenir",tabHas:"Contient",listHead:"Plats selon vos allergènes",lhFree:"Ces plats ne mentionnent aucun de vos allergènes.",lhMay:"Ces plats peuvent contenir vos allergènes par contact croisé.",lhHas:"Ces plats contiennent au moins l'un de vos allergènes.",noData:"{n} plats n'ont pas de données d'allergènes et ne sont pas affichés. Veuillez demander au personnel.",cardHas:"Contient votre allergène :",cardMay:"Peut contenir votre allergène :",cardFree:"Aucun de vos allergènes sélectionnés n'est mentionné"},
+de:{selHead:"Wählen Sie zuerst die Lebensmittel, gegen die Sie allergisch sind (Mehrfachauswahl möglich).",myAl:"Meine Allergene",edit:"Ändern",clear:"Löschen",noneSel:"Keine Auswahl",tabFree:"Nicht aufgeführt",tabMay:"Kann enthalten",tabHas:"Enthält",listHead:"Gerichte für Ihre Allergene",lhFree:"Diese Gerichte führen keines Ihrer Allergene auf.",lhMay:"Diese Gerichte können Ihre Allergene durch Kreuzkontakt enthalten.",lhHas:"Diese Gerichte enthalten mindestens eines Ihrer Allergene.",noData:"{n} Gerichte haben keine Allergendaten und werden nicht angezeigt. Bitte das Personal fragen.",cardHas:"Enthält Ihr Allergen:",cardMay:"Kann Ihr Allergen enthalten:",cardFree:"Keines Ihrer gewählten Allergene ist aufgeführt"},
+it:{selHead:"Seleziona prima gli alimenti a cui sei allergico (puoi sceglierne più di uno).",myAl:"I miei allergeni",edit:"Modifica",clear:"Cancella",noneSel:"Nessuna selezione",tabFree:"Non indicato",tabMay:"Può contenere",tabHas:"Contiene",listHead:"Piatti in base ai tuoi allergeni",lhFree:"Questi piatti non indicano nessuno dei tuoi allergeni.",lhMay:"Questi piatti possono contenere i tuoi allergeni per contaminazione crociata.",lhHas:"Questi piatti contengono almeno uno dei tuoi allergeni.",noData:"{n} piatti non hanno dati sugli allergeni e non sono mostrati. Chiedi al personale.",cardHas:"Contiene il tuo allergene:",cardMay:"Può contenere il tuo allergene:",cardFree:"Nessuno degli allergeni selezionati è indicato"},
+th:{selHead:"เลือกอาหารที่คุณแพ้ก่อน (เลือกได้หลายรายการ)",myAl:"สิ่งที่ฉันแพ้",edit:"แก้ไข",clear:"ล้าง",noneSel:"ยังไม่ได้เลือก",tabFree:"ไม่มีในรายการ",tabMay:"อาจมี",tabHas:"มีส่วนผสม",listHead:"เมนูตามสิ่งที่คุณแพ้",lhFree:"เมนูเหล่านี้ไม่มีสิ่งที่คุณแพ้ในรายการ",lhMay:"เมนูเหล่านี้อาจมีสิ่งที่คุณแพ้จากการปนเปื้อนข้าม",lhHas:"เมนูเหล่านี้มีสิ่งที่คุณแพ้อย่างน้อยหนึ่งอย่าง",noData:"มี {n} เมนูที่ไม่มีข้อมูลสารก่อภูมิแพ้ จึงไม่แสดง กรุณาสอบถามพนักงาน",cardHas:"มีสิ่งที่คุณแพ้:",cardMay:"อาจมีสิ่งที่คุณแพ้:",cardFree:"ไม่มีสิ่งที่คุณเลือกอยู่ในรายการ"},
+vi:{selHead:"Hãy chọn trước các thực phẩm bạn bị dị ứng (có thể chọn nhiều).",myAl:"Dị ứng của tôi",edit:"Sửa",clear:"Xóa",noneSel:"Chưa chọn",tabFree:"Không ghi",tabMay:"Có thể chứa",tabHas:"Có chứa",listHead:"Món theo dị ứng của bạn",lhFree:"Các món này không ghi thành phần nào bạn dị ứng.",lhMay:"Các món này có thể chứa thành phần bạn dị ứng do nhiễm chéo.",lhHas:"Các món này chứa ít nhất một thành phần bạn dị ứng.",noData:"{n} món chưa có dữ liệu dị ứng nên không hiển thị. Vui lòng hỏi nhân viên.",cardHas:"Có chứa thành phần bạn dị ứng:",cardMay:"Có thể chứa thành phần bạn dị ứng:",cardFree:"Không ghi thành phần nào bạn đã chọn"},
+my:{selHead:"သင်မတည့်သော အစားအစာများကို ဦးစွာရွေးပါ (အများအပြား ရွေးနိုင်သည်)။",myAl:"ကျွန်ုပ်မတည့်သည့်ပစ္စည်း",edit:"ပြင်ရန်",clear:"ဖျက်ရန်",noneSel:"မရွေးရသေးပါ",tabFree:"မပါ",tabMay:"ပါဝင်နိုင်",tabHas:"ပါဝင်",listHead:"သင်မတည့်သော ပစ္စည်းအလိုက် မီနူးများ",lhFree:"ဤမီနူးများတွင် သင်မတည့်သည့် ပစ္စည်း မစာရင်းသွင်းထားပါ။",lhMay:"ဤမီနူးများတွင် ရောနှောမှုကြောင့် သင်မတည့်သည့် ပစ္စည်း ပါဝင်နိုင်သည်။",lhHas:"ဤမီနူးများတွင် သင်မတည့်သည့် ပစ္စည်း အနည်းဆုံးတစ်ခု ပါဝင်သည်။",noData:"မီနူး {n} ခုတွင် ဒေတာမရှိသဖြင့် မပြထားပါ။ ဝန်ထမ်းကို မေးပါ။",cardHas:"သင်မတည့်သည့် ပစ္စည်း ပါဝင်သည် -",cardMay:"သင်မတည့်သည့် ပစ္စည်း ပါဝင်နိုင်သည် -",cardFree:"သင်ရွေးထားသော ပစ္စည်း မစာရင်းသွင်းထားပါ"},
+ja:{selHead:"アレルギーのある食材を先に選んでください（複数選択可）。",myAl:"選択中のアレルゲン",edit:"変更",clear:"解除",noneSel:"未選択",tabFree:"含まない",tabMay:"含む可能性",tabHas:"含む",listHead:"選択したアレルゲン別のメニュー",lhFree:"選択したアレルゲンが登録されていないメニューです。",lhMay:"コンタミネーションにより含む可能性のあるメニューです。",lhHas:"選択したアレルゲンを1つ以上含むメニューです。",noData:"アレルゲン情報のないメニュー{n}件は表示していません。スタッフにお尋ねください。",cardHas:"選択したアレルゲンを含む：",cardMay:"選択したアレルゲンを含む可能性：",cardFree:"選択したアレルゲンは登録されていません"}
+};
+Object.keys(UI2).forEach(function(k){Object.keys(UI2[k]).forEach(function(f){UI[k][f]=UI2[k][f];});});
 
 /* Allergen names, same order as the source sheet columns (28 items). */
 var AT={
@@ -327,8 +365,9 @@ function scrollDown(){thread.scrollTop=thread.scrollHeight;}
 function addUser(text){
   var d=document.createElement('div');d.className='msg user';d.textContent=text;msgs.appendChild(d);scrollDown();return d;
 }
-function addBot(html){
+function addBot(html,noScroll){
   var d=document.createElement('div');d.className='msg bot';d.innerHTML=html;msgs.appendChild(d);
+  if(noScroll)return d;
   requestAnimationFrame(function(){
     /* A tall answer is read from its top; a short one sits at the bottom of the thread. */
     if(d.offsetHeight>thread.clientHeight-32){
@@ -355,13 +394,13 @@ function storeTag(g){return g.s==='GM'?T('allStoresTag'):g.s;}
 function cardHTML(g){
   var cats=Object.keys(g.cats).map(catLabel).filter(function(v,i,a){return a.indexOf(v)===i;}).join(' / ');
   var h='<article class="card"><h3 lang="ja">'+esc(g.n)+'</h3><div class="meta"><span>'+esc(cats)+'</span><span lang="ja"><b>'+esc(storeTag(g))+'</b></span></div>';
-  h+=allergenBlock(g.ua);
+  h+=selBanner(g.ua)+allergenBlock(g.ua);
   if(g.vars.length===1){
     if(g.vars[0].p){h+='<p class="inc"><b>'+esc(T('inc'))+':</b> <span lang="ja">'+esc(g.vars[0].p)+'</span></p>';}
   }else{
     h+='<p class="inc">'+esc(T('union'))+'</p><details class="combos"><summary>'+esc(T('combos'))+' ('+g.vars.length+')</summary>';
     g.vars.forEach(function(v){
-      h+='<div class="combo"><p lang="ja">'+esc(v.p||g.n)+'</p>'+allergenBlock(v.a)+'</div>';
+      h+='<div class="combo"><p lang="ja">'+esc(v.p||g.n)+'</p>'+selBanner(v.a)+allergenBlock(v.a)+'</div>';
     });
     h+='</details>';
   }
@@ -462,56 +501,106 @@ function answer(q){
   });
 }
 
-/* ---------- reverse lookup ---------- */
-function reverseFlow(){
-  addUser(T('rev'));
-  var h='<p>'+esc(T('revHead'))+'</p><div class="pick" role="group" aria-label="'+esc(T('revHead'))+'">';
+/* ---------- allergen selection and lists ---------- */
+var sel=[];
+function saveSel(){safeSet('chibo-allergy-sel',JSON.stringify(sel));}
+function names(idx){return idx.map(alName).join(', ');}
+function overlap(a){
+  var h=[],m=[];
+  sel.forEach(function(i){var c=a.charAt(i);if(c==='1')h.push(i);else if(c==='2')m.push(i);});
+  return {h:h,m:m};
+}
+function selBanner(a){
+  if(!sel.length)return '';
+  var o=overlap(a);
+  if(o.h.length)return '<p class="hit hit-has">'+esc(T('cardHas'))+' '+esc(names(o.h))+'</p>';
+  if(o.m.length)return '<p class="hit hit-may">'+esc(T('cardMay'))+' '+esc(names(o.m))+'</p>';
+  if(/^0+$/.test(a))return '';
+  return '<p class="hit hit-free">'+esc(T('cardFree'))+'</p>';
+}
+function renderSel(){
+  $('sellbl').textContent=T('myAl');
+  $('seledit').textContent=T('edit');
+  $('selchips').innerHTML=sel.length?sel.map(function(i){
+    return '<li class="al al-has"><i aria-hidden="true">●</i><span>'+esc(alName(i))+'</span></li>';
+  }).join(''):'<li class="hint">'+esc(T('noneSel'))+'</li>';
+}
+function openPicker(fromUser){
+  if(fromUser)addUser(T('myAl'));
+  var h='<p><b>'+esc(T('selHead'))+'</b></p><div class="pick" role="group" aria-label="'+esc(T('selHead'))+'">';
   for(var i=0;i<28;i++){
-    h+='<button type="button" data-i="'+i+'" aria-pressed="false">'+esc(alName(i))+(lang==='ja'?'':'<small lang="ja">'+esc(AL[i])+'</small>')+'</button>';
+    h+='<button type="button" data-i="'+i+'" aria-pressed="'+(sel.indexOf(i)>-1)+'">'+esc(alName(i))+(lang==='ja'?'':'<small lang="ja">'+esc(AL[i])+'</small>')+'</button>';
   }
-  h+='</div><button type="button" class="go">'+esc(T('revGo'))+'</button><p class="warn" role="status"></p>';
-  var b=addBot(h);
+  h+='</div><div class="chips"><button type="button" class="go">'+esc(T('revGo'))+'</button><button type="button" class="chip clr">'+esc(T('clear'))+'</button></div><p class="warn" role="status"></p>';
+  var b=addBot(h,!fromUser);
   b.querySelectorAll('.pick button').forEach(function(btn){
-    btn.addEventListener('click',function(){btn.setAttribute('aria-pressed',btn.getAttribute('aria-pressed')==='true'?'false':'true');});
+    btn.addEventListener('click',function(){
+      var i=+btn.getAttribute('data-i'),k=sel.indexOf(i);
+      if(k>-1){sel.splice(k,1);}else{sel.push(i);sel.sort(function(x,y){return x-y;});}
+      btn.setAttribute('aria-pressed',k>-1?'false':'true');
+      saveSel();renderSel();
+    });
+  });
+  b.querySelector('.clr').addEventListener('click',function(){
+    sel=[];saveSel();renderSel();
+    b.querySelectorAll('.pick button').forEach(function(x){x.setAttribute('aria-pressed','false');});
   });
   b.querySelector('.go').addEventListener('click',function(){
-    var sel=[].slice.call(b.querySelectorAll('.pick button[aria-pressed="true"]')).map(function(x){return +x.getAttribute('data-i');});
     var warn=b.querySelector('.warn');
     if(!sel.length){warn.textContent=T('revNone');return;}
     warn.textContent='';
-    showFree(sel);
+    showLists();
   });
 }
-function showFree(sel){
-  var rows=[],seen={};
+function classify(){
+  var out={free:[],may:[],has:[],nodata:0},seen={};
   groups.filter(inStore).forEach(function(g){
     g.vars.forEach(function(v){
-      if(/^0+$/.test(v.a))return;
-      for(var k=0;k<sel.length;k++){if(v.a.charAt(sel[k])!=='0')return;}
       var key=g.s+'|'+g.n+'|'+v.p+'|'+v.a;if(seen[key])return;seen[key]=1;
-      rows.push({g:g,v:v});
+      var o=overlap(v.a),row={g:g,v:v,o:o};
+      if(o.h.length)out.has.push(row);
+      else if(o.m.length)out.may.push(row);
+      else if(/^0+$/.test(v.a))out.nodata++;
+      else out.free.push(row);
     });
   });
-  rows.sort(function(a,b){var ga=a.g.s==='GM'?0:1,gb=b.g.s==='GM'?0:1;return ga-gb||(a.g.n<b.g.n?-1:1);});
-  var names=sel.map(alName).join(', ');
-  var head='<p><b>'+esc(T('freeHead'))+'</b><br><span class="hint">'+esc(names)+'</span></p>';
-  if(!rows.length){addBot(head+'<p>'+esc(T('freeEmpty'))+'</p>'+footHTML());return;}
-  var b=addBot(head+'<p class="hint">'+esc(T('freeNote'))+'</p><div class="cards"></div>'+footHTML());
-  var P=8;
-  function draw(from){
-    var html=rows.slice(from,from+P).map(function(r){
-      var cats=Object.keys(r.g.cats).map(catLabel).join(' / ');
-      return '<article class="card"><h3 lang="ja">'+esc(r.g.n)+'</h3><div class="meta"><span>'+esc(cats)+'</span><span lang="ja"><b>'+esc(storeTag(r.g))+'</b></span></div>'+(r.v.p?'<p class="inc"><b>'+esc(T('inc'))+':</b> <span lang="ja">'+esc(r.v.p)+'</span></p>':'')+allergenBlock(r.v.a)+'</article>';
-    }).join('');
-    b.querySelector('.cards').insertAdjacentHTML('beforeend',html);
-    var old=b.querySelector('.more');if(old)old.remove();
+  ['free','may','has'].forEach(function(k){
+    out[k].sort(function(a,b){var ga=a.g.s==='GM'?0:1,gb=b.g.s==='GM'?0:1;return ga-gb||(a.g.n<b.g.n?-1:a.g.n>b.g.n?1:0);});
+  });
+  return out;
+}
+function rowHTML(r,k){
+  var cats=Object.keys(r.g.cats).map(catLabel).join(' / ');
+  var ban=k==='has'?'<p class="hit hit-has">'+esc(T('cardHas'))+' '+esc(names(r.o.h))+'</p>'
+    :k==='may'?'<p class="hit hit-may">'+esc(T('cardMay'))+' '+esc(names(r.o.m))+'</p>'
+    :'<p class="hit hit-free">'+esc(T('cardFree'))+'</p>';
+  return '<article class="card"><h3 lang="ja">'+esc(r.g.n)+'</h3><div class="meta"><span>'+esc(cats)+'</span><span lang="ja"><b>'+esc(storeTag(r.g))+'</b></span></div>'+ban+(r.v.p?'<p class="inc"><b>'+esc(T('inc'))+':</b> <span lang="ja">'+esc(r.v.p)+'</span></p>':'')+allergenBlock(r.v.a)+'</article>';
+}
+function showLists(){
+  var data=classify(),KEYS=['free','may','has'],P=8;
+  var tabs='<div class="tabs" role="tablist">'+KEYS.map(function(k,i){
+    return '<button type="button" role="tab" class="tab" data-k="'+k+'" aria-selected="'+(i===0)+'">'+esc(T('tab'+k.charAt(0).toUpperCase()+k.slice(1)))+' <span class="cnt">'+data[k].length+'</span></button>';
+  }).join('')+'</div>';
+  var b=addBot('<p><b>'+esc(T('listHead'))+'</b><br><span class="hint">'+esc(names(sel))+'</span></p>'+tabs+'<p class="hint sub"></p><div class="cards"></div><div class="morebox"></div>'+(data.nodata?'<p class="hint">'+esc(T('noData').replace('{n}',data.nodata))+'</p>':'')+footHTML());
+  var cards=b.querySelector('.cards'),box=b.querySelector('.morebox'),sub=b.querySelector('.sub');
+  function draw(k,from){
+    if(from===0){cards.innerHTML='';sub.textContent=T('lh'+k.charAt(0).toUpperCase()+k.slice(1));}
+    box.innerHTML='';
+    var rows=data[k];
+    if(!rows.length){cards.innerHTML='<p>'+esc(T('freeEmpty'))+'</p>';return;}
+    cards.insertAdjacentHTML('beforeend',rows.slice(from,from+P).map(function(r){return rowHTML(r,k);}).join(''));
     if(from+P<rows.length){
       var m=document.createElement('button');m.type='button';m.className='chip more';m.textContent=T('more')+' ('+(rows.length-from-P)+')';
-      m.addEventListener('click',function(){draw(from+P);});
-      b.insertBefore(m,b.querySelector('.foot'));
+      m.addEventListener('click',function(){draw(k,from+P);});box.appendChild(m);
     }
   }
-  draw(0);
+  b.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click',function(){
+      b.querySelectorAll('.tab').forEach(function(x){x.setAttribute('aria-selected',x===t?'true':'false');});
+      draw(t.getAttribute('data-k'),0);
+    });
+  });
+  draw('free',0);
 }
 
 /* ---------- shell ---------- */
@@ -535,8 +624,9 @@ function applyUI(){
   var sel=$('store'),cur=store;
   sel.innerHTML='<option value="all">'+esc(T('storeAll'))+'</option>'+DATA.stores.map(function(s){return '<option value="'+esc(s)+'">'+esc(s)+'</option>';}).join('');
   sel.value=cur;
+  renderSel();
   var q=$('quick');q.innerHTML='';
-  var rb=document.createElement('button');rb.type='button';rb.className='chip alt';rb.textContent=T('rev');rb.addEventListener('click',reverseFlow);q.appendChild(rb);
+  var rb=document.createElement('button');rb.type='button';rb.className='chip alt';rb.textContent=T('myAl');rb.addEventListener('click',function(){openPicker(true);});q.appendChild(rb);
   [['okonomi','お好み焼'],['yakisoba','焼そば'],['salad','サラダ'],['dessert','デザート'],['drink','ドリンク']].forEach(function(p){
     var b=document.createElement('button');b.type='button';b.className='chip';b.textContent=(CATL[lang]||CATL.en)[p[0]];
     b.addEventListener('click',function(){answer(p[1]);});q.appendChild(b);
@@ -544,8 +634,10 @@ function applyUI(){
 }
 function greet(){
   msgs.innerHTML='';
-  var b=addBot('<p>'+esc(T('greet'))+'</p><p class="hint">'+esc(T('pickLang'))+'</p>'+langChips());
+  var b=addBot('<p>'+esc(T('greet'))+'</p><p class="hint">'+esc(T('pickLang'))+'</p>'+langChips(),true);
   bindLang(b);
+  openPicker(false);
+  thread.scrollTop=0;
 }
 function setLang(c,reset){
   lang=c;safeSet('chibo-allergy-lang',c);applyUI();
@@ -563,6 +655,11 @@ $('f').addEventListener('submit',function(e){e.preventDefault();var v=$('q').val
   var s=safeGet('chibo-allergy-store');
   var qs='';try{qs=new URLSearchParams(location.search).get('store')||'';}catch(e){}
   if(qs&&DATA.stores.indexOf(qs)>-1)store=qs;else if(s&&DATA.stores.indexOf(s)>-1)store=s;
+  try{
+    var js=JSON.parse(safeGet('chibo-allergy-sel')||'[]');
+    if(Array.isArray(js))sel=js.filter(function(n,i){return typeof n==='number'&&n>=0&&n<28&&n%1===0&&js.indexOf(n)===i;}).sort(function(x,y){return x-y;});
+  }catch(e){sel=[];}
+  $('seledit').addEventListener('click',function(){openPicker(true);});
   applyUI();greet();
 })();
 })();
