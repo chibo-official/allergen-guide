@@ -160,6 +160,7 @@ form button{flex:none;background:var(--brand);color:var(--brand-ink);border:0;bo
 #gate .gneed{font-size:.85rem;color:var(--muted);margin:14px 0 8px}
 #gate .gok{position:sticky;bottom:max(12px,env(safe-area-inset-bottom,0px));box-shadow:0 0 0 10px var(--bg);display:block;width:100%;min-height:52px;border:0;border-radius:10px;background:var(--brand);color:var(--brand-ink);font:inherit;font-weight:700;font-size:1.05rem;cursor:pointer}
 #gate .gok:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
+.orlbl{margin:6px 0 4px;font-size:.8rem;color:var(--muted)}
 </style>
 
 <header class="band"><div class="wrap">
@@ -179,6 +180,7 @@ form button{flex:none;background:var(--brand);color:var(--brand-ink);border:0;bo
 <main id="thread" aria-live="polite" aria-label="Chat"><div class="wrap" id="msgs"></div></main>
 <div class="composer"><div class="wrap">
   <div class="quick" id="quick"></div>
+  <p class="orlbl" id="orlbl"></p>
   <form id="f" autocomplete="off">
     <input id="q" type="text" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false">
     <button type="submit" id="sendbtn"></button>
@@ -219,6 +221,7 @@ ja:{title:"アレルギー情報ガイド",sub:"メニュー別アレルギー�
 };
 
 
+var ORL={"ja": "または、メニュー名から探す", "en": "Or search by dish name", "zhs": "或者按菜品名称查找", "zht": "或者依菜色名稱查找", "ko": "또는 메뉴 이름으로 검색", "fr": "Ou recherchez par nom de plat", "de": "Oder nach Gerichtsnamen suchen", "it": "Oppure cerca per nome del piatto", "th": "หรือค้นหาจากชื่อเมนู", "vi": "Hoặc tìm theo tên món", "my": "သို့မဟုတ် မီနူးအမည်ဖြင့် ရှာပါ"};
 var UI2={
 en:{selHead:"Select the foods you are allergic to (you can choose several).",myAl:"My allergens",edit:"Edit",clear:"Clear",noneSel:"None selected",tabFree:"Not listed",tabMay:"May contain",tabHas:"Contains",listHead:"Dishes for your allergens",lhFree:"These dishes do not list any of your allergens.",lhMay:"These dishes may contain your allergens through cross-contact.",lhHas:"These dishes contain at least one of your allergens.",noData:"{n} dishes have no allergen data and are not shown. Please ask our staff.",cardHas:"Contains your allergen:",cardMay:"May contain your allergen:",cardFree:"None of your selected allergens are listed"},
 zhs:{selHead:"请选择您过敏的食材（可多选）。",myAl:"我的过敏原",edit:"修改",clear:"清除",noneSel:"未选择",tabFree:"未含有",tabMay:"可能含有",tabHas:"含有",listHead:"按您的过敏原筛选的菜品",lhFree:"这些菜品未登记含有您的任何过敏原。",lhMay:"这些菜品可能因交叉接触而含有您的过敏原。",lhHas:"这些菜品至少含有您的一种过敏原。",noData:"有{n}道菜品没有过敏原数据，未在此显示。请询问店员。",cardHas:"含有您的过敏原：",cardMay:"可能含有您的过敏原：",cardFree:"未登记含有您所选的任何过敏原"},
@@ -638,6 +641,7 @@ function applyUI(){
   $('ttl').textContent=T('title');$('sub').textContent=T('sub');
   $('langbtn').textContent=L.n;$('langbtn').setAttribute('aria-label',T('langBtn'));
   $('storelbl').textContent=T('storeLbl');
+  $('orlbl').textContent=ORL[lang]||ORL.en;
   $('q').placeholder=T('ph');$('q').setAttribute('aria-label',T('ph'));
   $('sendbtn').textContent=T('send');
   $('note').textContent=T('note')+'  ·  Data '+DATA.asOf;
@@ -646,16 +650,14 @@ function applyUI(){
   sel.value=cur;
   renderSel();
   var q=$('quick');q.innerHTML='';
-  var rb=document.createElement('button');rb.type='button';rb.className='chip alt';rb.textContent=T('myAl');rb.addEventListener('click',function(){openPicker(true);});q.appendChild(rb);
-  [['okonomi','お好み焼'],['yakisoba','焼そば'],['salad','サラダ'],['dessert','デザート'],['drink','ドリンク']].forEach(function(p){
+  var rb=document.createElement('button');rb.type='button';rb.className='chip alt';rb.textContent=T('myAl');rb.addEventListener('click',function(){openPicker(true);});
+  [].forEach(function(p){
     var b=document.createElement('button');b.type='button';b.className='chip';b.textContent=(CATL[lang]||CATL.en)[p[0]];
     b.addEventListener('click',function(){answer(p[1]);});q.appendChild(b);
   });
 }
 function greet(){
   msgs.innerHTML='';
-  var b=addBot('<p>'+esc(T('greet'))+'</p><p class="hint">'+esc(T('pickLang'))+'</p>'+langChips(),true);
-  bindLang(b);
   openPicker(false);
   thread.scrollTop=0;
 }
